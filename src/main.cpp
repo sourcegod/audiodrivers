@@ -19,14 +19,15 @@
 // Unix variants
 #include <unistd.h>
 #define SLEEP( milliseconds ) usleep( (unsigned long) (milliseconds * 1000.0) )
-typedef signed short MY_TYPE;
-#define FORMAT RTAUDIO_SINT16
-#define SCALE  32767.0
+// typedef signed short MY_TYPE;
+typedef float MY_TYPE;
+#define FORMAT RTAUDIO_FLOAT32 // RTAUDIO_SINT16
+#define SCALE  1.0 // 32767.0
 
 // Platform-dependent sleep routines.
 // Interrupt handler function
-bool done;
-static void finish( int /*ignore*/ ){ done = true; }
+bool _done;
+static void finish( int /*ignore*/ ){ _done = true; }
 
 #define BASE_RATE 0.005 // rate * base_rate = 220.5, nearly note A220.
 #define TIME   1.0
@@ -141,10 +142,10 @@ int main( int argc, char *argv[] ) {
   }
 
     // Install an interrupt handler function.
-    done = false;
+    _done = false;
     (void) signal(SIGINT, finish);
 
-    while ( !done && audiom->is_running() ) SLEEP( 100 );
+    while ( !_done && audiom->is_running() ) SLEEP( 100 );
 
     // Block released ... stop the stream
     audiom->stop_driver();

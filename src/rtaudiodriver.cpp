@@ -18,7 +18,9 @@
 #include <iostream>
 #include <cstdlib>
 
-#define FORMAT RTAUDIO_SINT16
+#define FORMAT RTAUDIO_FLOAT32 
+// #define FORMAT RTAUDIO_SINT16
+
 /*
 RtAudioDriver::RtAudioDriver() {
     // _dac = RtAudio( RtAudio::UNSPECIFIED, &errorCallback );
