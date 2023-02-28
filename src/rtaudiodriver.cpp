@@ -78,16 +78,16 @@ int RtAudioDriver::init_params(unsigned int channels, unsigned int rate, unsigne
     _rate = rate;
     _bufferFrames = bufferFrames;
     unsigned int deviceId =0;
-    oParams.nChannels = _channels;
+    _out_params.nChannels = _channels;
     if ( outputDevice == 0 ) {
         deviceId = _dac->getDefaultOutputDevice();
-        oParams.deviceId  = deviceId;
+        _out_params.deviceId  = deviceId;
     } else {
         if ( outputDevice >= _deviceIds.size() ) {
             outputDevice = getDeviceIndex( _dac->getDeviceNames() );
         }
         deviceId = _deviceIds[outputDevice];
-        oParams.deviceId  = deviceId;
+        _out_params.deviceId  = deviceId;
       
     }
 
@@ -96,23 +96,72 @@ int RtAudioDriver::init_params(unsigned int channels, unsigned int rate, unsigne
 //----------------------------------------------------------
 
 int RtAudioDriver::open() {
+    RtAudio::StreamParameters *output_params, *input_params = NULL;
+    _in_params.nChannels =0;
+    if (_output_channels >0) output_params = &_out_params;
+    if (_input_channels >0) input_params = &_in_params;
+    
     // opening devices in exclusive mode  
     // options.flags = RTAUDIO_HOG_DEVICE;
     options.flags |= RTAUDIO_SCHEDULE_REALTIME;
     // An error in the openStream() function can be detected either by
     // checking for a non-zero return value OR by a subsequent call to
     // isStreamOpen().
-    if ( _dac->openStream( 
-          &oParams, // output params
-          NULL, // input params
-          FORMAT, _rate, 
-          &_bufferFrames, 
-          _stream_callback, 
-          _user_data, 
-          &options ) ) {
-      std::cout << _dac->getErrorText() << std::endl;
-      close();
+      if ( _dac->openStream( 
+            output_params,
+            input_params, // input params
+            FORMAT, _rate, 
+            &_bufferFrames, 
+            _stream_callback, 
+            _user_data, 
+            &options ) ) {
+        std::cout << _dac->getErrorText() << std::endl;
+        close();
+      }
+  
+    /*
+    if (_out_params.nChannels >0 and _in_params.nChannels >0) {
+        if ( _dac->openStream( 
+              // OUTPUT_PARAMS, // output params
+              &_out_params,
+              &_in_params, // input params
+              FORMAT, _rate, 
+              &_bufferFrames, 
+              _stream_callback, 
+              _user_data, 
+              &options ) ) {
+          std::cout << _dac->getErrorText() << std::endl;
+          close();
+        }
+    } else if (_out_params.nChannels >0) {
+        if ( _dac->openStream( 
+              // OUTPUT_PARAMS, // output params
+              &_out_params,
+              NULL, // input params
+              FORMAT, _rate, 
+              &_bufferFrames, 
+              _stream_callback, 
+              _user_data, 
+              &options ) ) {
+          std::cout << _dac->getErrorText() << std::endl;
+          close();
+        }
+    } else if (_in_params.nChannels >0) {
+        if ( _dac->openStream( 
+              // OUTPUT_PARAMS, // output params
+              NULL,
+              &_in_params, // input params
+              FORMAT, _rate, 
+              &_bufferFrames, 
+              _stream_callback, 
+              _user_data, 
+              &options ) ) {
+          std::cout << _dac->getErrorText() << std::endl;
+          close();
+        }
     }
+    */
+
     if ( _dac->isStreamOpen() == false ) close();
 
     std::cout << "Stream latency = " << _dac->getStreamLatency() << "\n" << std::endl;
@@ -146,6 +195,14 @@ void RtAudioDriver::stop_driver() {
       _dac->stopStream();  // or could call _dac->abortStream();
     std::cout << "Stopping the Stream...\n";
 
+}
+//----------------------------------------------------------
+
+void RtAudioDriver::set_audio_channels(unsigned int output_channels, unsigned int input_channels) { 
+    _output_channels = output_channels;
+    _out_params.nChannels = output_channels;
+    _input_channels = input_channels; 
+    _in_params.nChannels = input_channels;
 }
 //----------------------------------------------------------
 
