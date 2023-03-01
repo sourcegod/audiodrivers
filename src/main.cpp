@@ -20,6 +20,7 @@
 #include <signal.h>
 // Unix variants
 #include <unistd.h>
+
 #define SLEEP( milliseconds ) usleep( (unsigned long) (milliseconds * 1000.0) )
 // typedef signed short MY_TYPE;
 typedef float MY_TYPE;
@@ -33,9 +34,10 @@ static void finish( int /*ignore*/ ){ _done = true; }
 
 #define BASE_RATE 0.005 // rate * base_rate = 220.5, nearly note A220.
 #define TIME   1.0
-unsigned int _channels =2, _buffer_bytes;
+unsigned int _channels =2; 
 unsigned int _rate =44100;
 unsigned int _buffer_frames =256;
+unsigned int _buffer_bytes = _buffer_frames * _channels * sizeof(MY_TYPE);
 double* _userData = NULL;
 unsigned int frameCounter = 0;
 bool checkCount = false;
@@ -75,6 +77,11 @@ int _saw_callback( void *outputBuffer, void * /*inputBuffer*/, unsigned int nBuf
 }
 //----------------------------------------------------------
 
+void beep() {
+    std::cout << "\a";
+}
+//----------------------------------------------------------
+
 
 int _audio_callback( 
         void *outputBuffer, void *inputBuffer, 
@@ -91,14 +98,17 @@ int _audio_callback(
 
     // Since the number of input and output channels is equal, we can do
     // a simple buffer copy operation here.
-    if ( status ) std::cout << "Stream over/underflow detected." << std::endl;
+    if ( status ) {
+        std::cout << "Stream over/underflow detected." << std::endl;
+        beep();
+    }
     if ( streamTime >= streamTimePrintTime ) {
         std::cout << "streamTime = " << streamTime << std::endl;
         streamTimePrintTime += streamTimePrintIncrement;
     }
 
 
-    _buffer_bytes = nBufferFrames * _channels * sizeof(MY_TYPE);
+    // _buffer_bytes = nBufferFrames * _channels * sizeof(MY_TYPE);
     // std::cout << "bytes: " << *bytes << "\n";
     memcpy( outputBuffer, inputBuffer, _buffer_bytes);
     
