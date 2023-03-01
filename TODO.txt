@@ -1,0 +1,15 @@
+### TODO list on AudioDrivers
+Date: Thu, 02/03/2023
+Author: Coolbrother
+
+Date: Thu, 02/03/2023
+-- Make AudioManager class to manage the driver, with methods:
+start_driver, stop_driver, stream_callback, play, stop...
+
+-- Make commandline interactive to manage play, stop... functions.
+
+-- Make generic audio driver as parent class, and dummy classes for AudioDriver class.
+#----------------------------------------------------------
+
+
+
