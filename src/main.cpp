@@ -13,6 +13,8 @@
 
 #include "RtAudio.h"
 #include "rtaudiodriver.h"
+#include <cstring> // for memcpy
+
 
 
 #include <signal.h>
@@ -31,9 +33,9 @@ static void finish( int /*ignore*/ ){ _done = true; }
 
 #define BASE_RATE 0.005 // rate * base_rate = 220.5, nearly note A220.
 #define TIME   1.0
-unsigned int _channels =2;
+unsigned int _channels =2, _buffer_bytes;
 unsigned int _rate =44100;
-unsigned int _bufferFrames =256;
+unsigned int _buffer_frames =256;
 double* _userData = NULL;
 unsigned int frameCounter = 0;
 bool checkCount = false;
@@ -75,23 +77,37 @@ int _saw_callback( void *outputBuffer, void * /*inputBuffer*/, unsigned int nBuf
 
 
 int _audio_callback( 
-        void *outputBuffer, void * /*inputBuffer*/, 
+        void *outputBuffer, void *inputBuffer, 
         unsigned int nBufferFrames, double streamTime, 
         RtAudioStreamStatus status, void *userData ) {
     
+    /*
     unsigned int i, j;
     extern unsigned int _channels;
     MY_TYPE *buffer = (MY_TYPE *) outputBuffer;
     double *lastValues = (double *) userData;
+    */
 
-    if ( status )
-        std::cout << "Stream underflow detected!" << std::endl;
 
+    // Since the number of input and output channels is equal, we can do
+    // a simple buffer copy operation here.
+    if ( status ) std::cout << "Stream over/underflow detected." << std::endl;
     if ( streamTime >= streamTimePrintTime ) {
         std::cout << "streamTime = " << streamTime << std::endl;
         streamTimePrintTime += streamTimePrintIncrement;
     }
 
+
+    _buffer_bytes = nBufferFrames * _channels * sizeof(MY_TYPE);
+    // std::cout << "bytes: " << *bytes << "\n";
+    memcpy( outputBuffer, inputBuffer, _buffer_bytes);
+    
+    /*
+    if ( status )
+        std::cout << "Stream underflow detected!" << std::endl;
+    */
+      
+    /*
     for ( i=0; i<nBufferFrames; i++ ) {
         for ( j=0; j<_channels; j++ ) {
             *buffer++ = (MY_TYPE) (lastValues[j] * SCALE * 0.5);
@@ -102,6 +118,7 @@ int _audio_callback(
         }
 
     }
+    */
 
     frameCounter += nBufferFrames;
     if ( checkCount && ( frameCounter >= nFrames ) ) return callbackReturnValue;
@@ -113,7 +130,7 @@ int _audio_callback(
 
 
 int main( int argc, char *argv[] ) {
-  unsigned int bufferFrames, device =0;
+  unsigned int device =0;
   auto* audiom = new RtAudioDriver();
   audiom->check_devices();
   audiom->print_devices();
@@ -125,21 +142,21 @@ int main( int argc, char *argv[] ) {
 
   _userData = (double *) calloc( _channels, sizeof( double ) );
 
-  bufferFrames = 256;
-  // /*
-  audiom->init_params(_channels, _rate, bufferFrames, device);
-  audiom->set_stream_callback(_audio_callback);
-  audiom->set_user_data(_userData);
-  audiom->open();
+    // /*
+    audiom->init_params(_channels, _rate, _buffer_frames, device);
+    audiom->set_stream_callback(_audio_callback);
+    audiom->set_user_data(_userData);
+    audiom->set_audio_channels(2, 2); // output and input
+    audiom->open();
 
-  // Stream is open ... now start it.
-  audiom->start_driver();
+    // Stream is open ... now start it.
+    audiom->start_driver();
 
-  if ( checkCount ) {
-    while ( audiom->is_running() == true ) SLEEP( 100 );
-  } else {
-    std::cout << "\nPlaying ... quit with Ctrl-C (buffer size = " << bufferFrames << ").\n";
-  }
+    if ( checkCount ) {
+      while ( audiom->is_running() == true ) SLEEP( 100 );
+    } else {
+      std::cout << "\nPlaying ... quit with Ctrl-C (buffer size = " << _buffer_frames << ").\n";
+    }
 
     // Install an interrupt handler function.
     _done = false;

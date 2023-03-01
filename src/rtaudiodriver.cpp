@@ -18,6 +18,7 @@
 #include <iostream>
 #include <cstdlib>
 
+typedef float MY_TYPE;
 #define FORMAT RTAUDIO_FLOAT32 
 // #define FORMAT RTAUDIO_SINT16
 
@@ -82,12 +83,14 @@ int RtAudioDriver::init_params(unsigned int channels, unsigned int rate, unsigne
     if ( outputDevice == 0 ) {
         deviceId = _dac->getDefaultOutputDevice();
         _out_params.deviceId  = deviceId;
+        _in_params.deviceId = deviceId;
     } else {
         if ( outputDevice >= _deviceIds.size() ) {
             outputDevice = getDeviceIndex( _dac->getDeviceNames() );
         }
         deviceId = _deviceIds[outputDevice];
         _out_params.deviceId  = deviceId;
+        _in_params.deviceId = deviceId;
       
     }
 
@@ -97,9 +100,10 @@ int RtAudioDriver::init_params(unsigned int channels, unsigned int rate, unsigne
 
 int RtAudioDriver::open() {
     RtAudio::StreamParameters *output_params, *input_params = NULL;
-    _in_params.nChannels =0;
+    // _in_params.nChannels =0;
     if (_output_channels >0) output_params = &_out_params;
     if (_input_channels >0) input_params = &_in_params;
+    unsigned int buffer_bytes = _bufferFrames * _input_channels * sizeof( MY_TYPE );
     
     // opening devices in exclusive mode  
     // options.flags = RTAUDIO_HOG_DEVICE;
@@ -119,49 +123,6 @@ int RtAudioDriver::open() {
         close();
       }
   
-    /*
-    if (_out_params.nChannels >0 and _in_params.nChannels >0) {
-        if ( _dac->openStream( 
-              // OUTPUT_PARAMS, // output params
-              &_out_params,
-              &_in_params, // input params
-              FORMAT, _rate, 
-              &_bufferFrames, 
-              _stream_callback, 
-              _user_data, 
-              &options ) ) {
-          std::cout << _dac->getErrorText() << std::endl;
-          close();
-        }
-    } else if (_out_params.nChannels >0) {
-        if ( _dac->openStream( 
-              // OUTPUT_PARAMS, // output params
-              &_out_params,
-              NULL, // input params
-              FORMAT, _rate, 
-              &_bufferFrames, 
-              _stream_callback, 
-              _user_data, 
-              &options ) ) {
-          std::cout << _dac->getErrorText() << std::endl;
-          close();
-        }
-    } else if (_in_params.nChannels >0) {
-        if ( _dac->openStream( 
-              // OUTPUT_PARAMS, // output params
-              NULL,
-              &_in_params, // input params
-              FORMAT, _rate, 
-              &_bufferFrames, 
-              _stream_callback, 
-              _user_data, 
-              &options ) ) {
-          std::cout << _dac->getErrorText() << std::endl;
-          close();
-        }
-    }
-    */
-
     if ( _dac->isStreamOpen() == false ) close();
 
     std::cout << "Stream latency = " << _dac->getStreamLatency() << "\n" << std::endl;
