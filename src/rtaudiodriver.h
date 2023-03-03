@@ -59,7 +59,6 @@ public:
     void start_driver();
     void stop_driver();
     bool is_running() { return _dac->isStreamRunning(); }
-    // void set_stream_callback(TStreamCallback stream_callback) { _stream_callback = stream_callback; } 
     void set_stream_callback(RtAudioCallback stream_callback) { _stream_callback = stream_callback; } 
     void set_user_data(void* user_data) { _user_data = user_data; }
     void set_audio_channels(unsigned int output_channels, unsigned int input_channels); 

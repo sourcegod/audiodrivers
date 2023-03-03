@@ -13,6 +13,7 @@
 
 #include "RtAudio.h"
 #include "rtaudiodriver.h"
+#include "audiomanager.h"
 #include <cstring> // for memcpy
 
 
@@ -140,8 +141,9 @@ int _audio_callback(
 
 
 int main( int argc, char *argv[] ) {
+  AudioManager *audiom = new AudioManager();
   unsigned int device =0;
-  auto* audiom = new RtAudioDriver();
+  // auto* audiom = new RtAudioDriver();
   audiom->check_devices();
   audiom->print_devices();
 
@@ -177,6 +179,8 @@ int main( int argc, char *argv[] ) {
     // Block released ... stop the stream
     audiom->stop_driver();
     audiom->close();
+    // */
+
 
 
     return 0;
