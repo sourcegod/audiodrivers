@@ -159,7 +159,7 @@ void RtAudioDriver::stop_driver() {
 }
 //----------------------------------------------------------
 
-void RtAudioDriver::set_audio_channels(unsigned int output_channels, unsigned int input_channels) { 
+void RtAudioDriver::set_audio_channels(unsigned int input_channels, unsigned int output_channels) { 
     _output_channels = output_channels;
     _out_params.nChannels = output_channels;
     _input_channels = input_channels; 

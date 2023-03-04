@@ -89,17 +89,15 @@ int _audio_callback(
         unsigned int nBufferFrames, double streamTime, 
         RtAudioStreamStatus status, void *userData ) {
     
-    /*
+    // /*
     unsigned int i, j;
     extern unsigned int _channels;
     MY_TYPE *buffer = (MY_TYPE *) outputBuffer;
     double *lastValues = (double *) userData;
-    */
+    // */
 
 
-    // Since the number of input and output channels is equal, we can do
-    // a simple buffer copy operation here.
-    if ( status ) {
+       if ( status ) {
         std::cout << "Stream over/underflow detected." << std::endl;
         beep();
     }
@@ -109,16 +107,21 @@ int _audio_callback(
     }
 
 
+    /*
+     // Copy buffer for duplex
+    // Since the number of input and output channels is equal, we can do
+    // a simple buffer copy operation here.
     // _buffer_bytes = nBufferFrames * _channels * sizeof(MY_TYPE);
     // std::cout << "bytes: " << *bytes << "\n";
     memcpy( outputBuffer, inputBuffer, _buffer_bytes);
+    */
     
     /*
     if ( status )
         std::cout << "Stream underflow detected!" << std::endl;
     */
       
-    /*
+    // /*
     for ( i=0; i<nBufferFrames; i++ ) {
         for ( j=0; j<_channels; j++ ) {
             *buffer++ = (MY_TYPE) (lastValues[j] * SCALE * 0.5);
@@ -129,7 +132,7 @@ int _audio_callback(
         }
 
     }
-    */
+    // */
 
     frameCounter += nBufferFrames;
     if ( checkCount && ( frameCounter >= nFrames ) ) return callbackReturnValue;
@@ -158,7 +161,7 @@ int main( int argc, char *argv[] ) {
     audiom->init_params(_channels, _rate, _buffer_frames, device);
     audiom->set_stream_callback(_audio_callback);
     audiom->set_user_data(_userData);
-    audiom->set_audio_channels(2, 2); // output and input
+    audiom->set_audio_channels(0, 2); // No inputs, 2 outputs
     audiom->open();
 
     // Stream is open ... now start it.
