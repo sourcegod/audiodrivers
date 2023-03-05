@@ -12,8 +12,17 @@ public:
     }
     // Audio Callback calling from RtAudioDriver by stream_callback_func function.
     void next_audio_block(void* input_buffer, void* output_buffer,
-        unsigned int buffer_frames, double stream_time,
-        unsigned int status, void* user_data) override {
+          unsigned int buffer_frames, double stream_time,
+          unsigned int status, void* user_data) 
+          override {
+      // Note: to avoid inused parameter warning
+      (void)input_buffer;
+      (void)output_buffer;
+      (void)buffer_frames;
+      (void)stream_time;
+      (void)status;
+      (void)user_data;
+
       std::cout << "\a\n";
       std::cout << "Je suis ici\n";
     }
