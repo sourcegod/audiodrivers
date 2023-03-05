@@ -103,7 +103,7 @@ int RtAudioDriver::open() {
     // _in_params.nChannels =0;
     if (_output_channels >0) output_params = &_out_params;
     if (_input_channels >0) input_params = &_in_params;
-    unsigned int buffer_bytes = _bufferFrames * _input_channels * sizeof( MY_TYPE );
+    // unsigned int buffer_bytes = _bufferFrames * _input_channels * sizeof( MY_TYPE );
     
     // opening devices in exclusive mode  
     // options.flags = RTAUDIO_HOG_DEVICE;
@@ -111,17 +111,19 @@ int RtAudioDriver::open() {
     // An error in the openStream() function can be detected either by
     // checking for a non-zero return value OR by a subsequent call to
     // isStreamOpen().
-      if ( _dac->openStream( 
+    if ( _dac->openStream( 
             output_params,
             input_params, // input params
             FORMAT, _rate, 
             &_bufferFrames, 
-            _stream_callback, 
-            _user_data, 
+            stream_callback_func, // _stream_callback, 
+            // _stream_callback, 
+
+            this, // _user_data, 
             &options ) ) {
         std::cout << _dac->getErrorText() << std::endl;
         close();
-      }
+    }
   
     if ( _dac->isStreamOpen() == false ) close();
 
@@ -167,4 +169,9 @@ void RtAudioDriver::set_audio_channels(unsigned int input_channels, unsigned int
 }
 //----------------------------------------------------------
 
+void RtAudioDriver::next_audio_block() {
+  std::cout << "Next_audio_block\n";
+
+}
+//----------------------------------------------------------
 

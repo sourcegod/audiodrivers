@@ -2,6 +2,8 @@
 #define RTAUDIO_DRIVER_H
 #include "RtAudio.h"
 #include <string>
+#include <iostream>
+
 /*
  * Note: Deprecated type, just for memo
 typedef int (*TStreamCallback )( 
@@ -29,6 +31,37 @@ private:
     void* _user_data = NULL;
     unsigned int _output_channels =2; // number of channels for input
     unsigned int _input_channels =0; // number of channels for input
+    
+    static int stream_callback_func( 
+        void *outputBuffer, void *inputBuffer, 
+        unsigned int nBufferFrames, double streamTime, 
+        RtAudioStreamStatus status, void *userData ) {
+    
+        /*
+        double *lastValues = (double *) userData;
+        */
+
+        RtAudioDriver *p_obj = (RtAudioDriver *) userData;
+        p_obj->next_audio_block();
+
+
+      std::cout << "\a\n";
+        if ( status ) {
+            std::cout << "Stream over/underflow detected." << std::endl;
+        }
+        
+        
+        /*
+        frameCounter += nBufferFrames;
+        if ( checkCount && ( frameCounter >= nFrames ) ) return callbackReturnValue;
+        */
+
+      
+
+        return 0;
+    }
+    //----------------------------------------------------------
+
 
 
 
@@ -60,6 +93,8 @@ public:
     void stop_driver();
     bool is_running() { return _dac->isStreamRunning(); }
     void set_stream_callback(RtAudioCallback stream_callback) { _stream_callback = stream_callback; } 
+    virtual void next_audio_block();
+    
     void set_user_data(void* user_data) { _user_data = user_data; }
     void set_audio_channels(unsigned int output_channels, unsigned int input_channels); 
 
