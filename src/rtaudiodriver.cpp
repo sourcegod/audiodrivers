@@ -169,11 +169,3 @@ void RtAudioDriver::set_audio_channels(unsigned int input_channels, unsigned int
 }
 //----------------------------------------------------------
 
-void RtAudioDriver::next_audio_block(void* input_buffer, void* output_buffer,
-    unsigned int buffer_frames, double stream_time,
-    unsigned status, void* user_data) {
-  std::cout << "Next_audio_block\n";
-
-}
-//----------------------------------------------------------
-

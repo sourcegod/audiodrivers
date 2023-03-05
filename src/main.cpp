@@ -78,9 +78,7 @@ int _saw_callback( void *outputBuffer, void * /*inputBuffer*/, unsigned int nBuf
 }
 //----------------------------------------------------------
 
-void beep() {
-    std::cout << "\a";
-}
+void beep() { std::cout << "\a"; }
 //----------------------------------------------------------
 
 

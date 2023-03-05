@@ -96,7 +96,7 @@ public:
     void set_stream_callback(RtAudioCallback stream_callback) { _stream_callback = stream_callback; } 
     virtual void next_audio_block(void* input_buffer, void* output_buffer,
         unsigned int buffer_frames, double stream_time,
-        unsigned int status, void* user_data);
+        unsigned int status, void* user_data) {}
     
     void set_user_data(void* user_data) { _user_data = user_data; }
     void set_audio_channels(unsigned int output_channels, unsigned int input_channels); 
