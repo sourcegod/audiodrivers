@@ -27,7 +27,7 @@
 typedef float MY_TYPE;
 #define FORMAT RTAUDIO_FLOAT32 // RTAUDIO_SINT16
 #define SCALE  1.0 // 32767.0
-
+#define UNUSED_PARAM(expr) do { (void)(expr); } while (0)
 // Platform-dependent sleep routines.
 // Interrupt handler function
 bool _done;
@@ -87,6 +87,7 @@ int _audio_callback(
         unsigned int nBufferFrames, double streamTime, 
         RtAudioStreamStatus status, void *userData ) {
     
+    UNUSED_PARAM(inputBuffer);
     // /*
     unsigned int i, j;
     extern unsigned int _channels;
