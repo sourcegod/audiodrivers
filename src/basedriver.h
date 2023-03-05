@@ -41,7 +41,7 @@ public:
     virtual void stop_driver() {}
     virtual bool is_running() { return false; }
     virtual void next_audio_block(void* /*input_buffer*/, void* /*output_buffer*/,
-        unsigned int /*buffer_frames, double stream_time*/,
+        unsigned int /*buffer_frames*/, double /*stream_time*/,
         unsigned int /*status*/, void* /*user_data*/) {}
     
     virtual void set_user_data(void* user_data) { _user_data = user_data; }

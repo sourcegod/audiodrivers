@@ -1,5 +1,6 @@
 #ifndef RTAUDIO_DRIVER_H
 #define RTAUDIO_DRIVER_H
+#include "basedriver.h"
 #include "RtAudio.h"
 #include <string>
 #include <iostream>
@@ -14,7 +15,7 @@ typedef int (*TStreamCallback )(
 */
 
  
-class RtAudioDriver {
+class RtAudioDriver : public BaseDriver {
 private:
     RtAudio* _dac =0;
     unsigned int _channels =2;
@@ -63,9 +64,6 @@ private:
     }
     //----------------------------------------------------------
 
-
-
-
 public:
     RtAudioDriver() {
         // Note: the error callback function must static  
@@ -82,24 +80,26 @@ public:
     ~RtAudioDriver() { delete _dac; }
     
     static void errorCallback( RtAudioErrorType /*type*/, const std::string &errorText );
-    void check_devices();
-    void print_devices();
-    unsigned int getDeviceIndex( std::vector<std::string> deviceNames );
+    void check_devices() override;
+    void print_devices() override;
+    unsigned int getDeviceIndex( std::vector<std::string> deviceNames ) override;
     int init_params(unsigned int channels, unsigned int rate, 
             unsigned int bufferFrames, 
-            unsigned int outputDevice);
-    int open();
-    void close();
-    void start_driver();
-    void stop_driver();
-    bool is_running() { return _dac->isStreamRunning(); }
+            unsigned int outputDevice) override;
+    int open() override;
+    void close() override;
+    void start_driver() override;
+    void stop_driver() override;
+    bool is_running() override { return _dac->isStreamRunning(); }
     void set_stream_callback(RtAudioCallback stream_callback) { _stream_callback = stream_callback; } 
-    virtual void next_audio_block(void* /*input_buffer*/, void* /*output_buffer*/,
-        unsigned int /*buffer_frames*/, double /*stream_time*/,
-        unsigned int /*status*/, void* /*user_data*/) {}
+    void next_audio_block(void* /*input_buffer*/, void* /*output_buffer*/,
+          unsigned int /*buffer_frames*/, double /*stream_time*/,
+          unsigned int /*status*/, void* /*user_data*/) 
+          override {}
     
-    void set_user_data(void* user_data) { _user_data = user_data; }
-    void set_audio_channels(unsigned int output_channels, unsigned int input_channels); 
+    void set_user_data(void* user_data) 
+        override { _user_data = user_data; }
+    void set_audio_channels(unsigned int output_channels, unsigned int input_channels) override; 
 
 };
 
