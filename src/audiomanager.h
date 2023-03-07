@@ -12,6 +12,7 @@ public:
     AudioManager();
     ~AudioManager();
     static AudioManager* get_instance();
+    BaseAudioDriver*  create_driver(std::string& s_aud_name);
 
     // Audio Callback calling from RtAudioDriver by stream_callback_func function.
     void next_audio_block(void* input_buffer, void* output_buffer,

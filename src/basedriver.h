@@ -1,5 +1,5 @@
-#ifndef BASE_DRIVER_h
-#define BASE_DRIVER_h
+#ifndef BASE_AUDIO_DRIVER_h
+#define BASE_AUDIO_DRIVER_h
 #include <vector>
 #include <string>
 
@@ -13,7 +13,7 @@ typedef int (*TStreamCallback )(
 */
 
  
-class BaseDriver {
+class BaseAudioDriver {
 private:
     unsigned int _channels =2;
     unsigned int _rate =44100;
@@ -25,8 +25,11 @@ private:
     unsigned int _output_channels =2; // number of channels for input
     
 public:
-    BaseDriver() { }
-    ~BaseDriver() { }
+    const std::string& _s_driver_name;
+    
+    BaseAudioDriver(const std::string& s_driver_name) : _s_driver_name(s_driver_name) { }
+    ~BaseAudioDriver() { }
+    const std::string& get_driver_name() { return _s_driver_name; }
     
     virtual void check_devices() {}
     virtual void print_devices() {}

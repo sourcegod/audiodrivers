@@ -15,7 +15,7 @@ typedef int (*TStreamCallback )(
 */
 
  
-class RtAudioDriver : public BaseDriver {
+class RtAudioDriver : public BaseAudioDriver {
 private:
     RtAudio* _dac =0;
     unsigned int _channels =2;
@@ -65,7 +65,7 @@ private:
     //----------------------------------------------------------
 
 public:
-    RtAudioDriver() {
+    RtAudioDriver() : BaseAudioDriver("RtAudioDriver") {
         // Note: the error callback function must static  
         // Default RtAudio constructor
         _dac = new RtAudio( RtAudio::UNSPECIFIED, &errorCallback );

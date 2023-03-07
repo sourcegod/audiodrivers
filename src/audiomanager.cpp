@@ -35,3 +35,16 @@ AudioManager*  AudioManager::get_instance() {
 }
 //----------------------------------------------------------
 
+BaseAudioDriver*  AudioManager::create_driver(std::string& s_aud_name) {
+    BaseAudioDriver *p_driver = NULL;   
+    if (s_aud_name == "RtAudio") {
+        p_driver = new RtAudioDriver();
+    
+    } else {
+        p_driver = NULL; // new NullDriver();
+    }
+    
+    return p_driver;
+}
+//----------------------------------------------------------
+
