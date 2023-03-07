@@ -4,12 +4,15 @@
 
 class AudioManager : public RtAudioDriver {
 private:
+    // must be initialized out of its klass, so in the source .cpp file  
+    static AudioManager *_instance;
     RtAudioDriver *_audiod;
 
 public:
-    AudioManager() {
-          // _audiod = new RtAudioDriver();
-    }
+    AudioManager();
+    ~AudioManager();
+    static AudioManager* get_instance();
+
     // Audio Callback calling from RtAudioDriver by stream_callback_func function.
     void next_audio_block(void* input_buffer, void* output_buffer,
           unsigned int buffer_frames, double stream_time,
