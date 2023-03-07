@@ -1,9 +1,12 @@
 #ifndef RTAUDIO_DRIVER_H
 #define RTAUDIO_DRIVER_H
+#include "../config.h"
 #include "basedriver.h"
-#include "RtAudio.h"
 #include <string>
 #include <iostream>
+
+#ifdef RTAUDIO_SUPPORT
+    #include "RtAudio.h"
 
 /*
  * Note: Deprecated type, just for memo
@@ -103,4 +106,12 @@ public:
 
 };
 
+#else
+class RtAudioDriver : public BaseAudioDriver {
+public:
+    RtAudioDriver() : BaseAudioDriver("NullDriver") {}
+
+};
+
+#endif // RTAUDIO_SUPPORT
 #endif
