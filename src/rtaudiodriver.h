@@ -2,6 +2,7 @@
 #define RTAUDIO_DRIVER_H
 #include "../config.h"
 #include "basedriver.h"
+#include "nulldriver.h"
 #include <string>
 #include <iostream>
 
@@ -107,11 +108,12 @@ public:
 };
 
 #else
-class RtAudioDriver : public BaseAudioDriver {
+
+class RtAudioDriver : public NullAudioDriver {
 public:
-    RtAudioDriver() : BaseAudioDriver("NullDriver") {}
+    RtAudioDriver() : NullDriver() {}
 
 };
 
 #endif // RTAUDIO_SUPPORT
-#endif
+#endif // RTAUDIO_DRIVER_H
