@@ -28,7 +28,7 @@ public:
     const std::string& _s_driver_name;
     
     BaseAudioDriver(const std::string& s_driver_name) : _s_driver_name(s_driver_name) { }
-    ~BaseAudioDriver() { }
+    virtual ~BaseAudioDriver() { }
     const std::string& get_driver_name() { return _s_driver_name; }
     
     virtual void check_devices() {}

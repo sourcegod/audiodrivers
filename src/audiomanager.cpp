@@ -39,9 +39,17 @@ BaseAudioDriver*  AudioManager::create_driver(std::string& s_aud_name) {
     BaseAudioDriver *p_driver = NULL;   
     if (s_aud_name == "RtAudio") {
         p_driver = new RtAudioDriver();
+        if (p_driver->get_driver_name()  == "NullAudioDriver") {
+            delete p_driver;  
+            p_driver = NULL;
+        }
     
     } else {
-        p_driver = NULL; // new NullDriver();
+        std::cerr << "[create_driver] Unknown driver" + s_aud_name + "\n";
+    }
+
+    if (p_driver != NULL) {
+        // Init driver
     }
     
     return p_driver;
