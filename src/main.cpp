@@ -143,18 +143,19 @@ int _audio_callback(
 
 
 int main( int argc, char *argv[] ) {
-  AudioManager *audiom = new AudioManager();
-  unsigned int device =0;
-  // auto* audiom = new RtAudioDriver();
-  audiom->check_devices();
-  audiom->print_devices();
+    // AudioManager *audiom = new AudioManager();
+    AudioManager *audiom = AudioManager::get_instance();
+    unsigned int device =0;
+    // auto* audiom = new RtAudioDriver();
+    audiom->check_devices();
+    audiom->print_devices();
 
-  if (argc > 1)
-    device = (unsigned int) atoi( argv[1] );
-  
-  if ( nFrames > 0 ) checkCount = true;
+    if (argc > 1)
+        device = (unsigned int) atoi( argv[1] );
+    
+    if ( nFrames > 0 ) checkCount = true;
 
-  _userData = (double *) calloc( _channels, sizeof( double ) );
+    _userData = (double *) calloc( _channels, sizeof( double ) );
 
     // /*
     audiom->init_params(_channels, _rate, _buffer_frames, device);
@@ -167,9 +168,9 @@ int main( int argc, char *argv[] ) {
     audiom->start_driver();
 
     if ( checkCount ) {
-      while ( audiom->is_running() == true ) SLEEP( 100 );
+        while ( audiom->is_running() == true ) SLEEP( 100 );
     } else {
-      std::cout << "\nPlaying ... quit with Ctrl-C (buffer size = " << _buffer_frames << ").\n";
+        std::cout << "\nPlaying ... quit with Ctrl-C (buffer size = " << _buffer_frames << ").\n";
     }
 
     // Install an interrupt handler function.
@@ -187,3 +188,4 @@ int main( int argc, char *argv[] ) {
 
     return 0;
 }
+//----------------------------------------------------------

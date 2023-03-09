@@ -4,12 +4,14 @@
 
 class AudioManager : public RtAudioDriver {
 private:
+    // Note: the constructor is in the private section, cause it's a Singleton klass
+    AudioManager();
     // must be initialized out of its klass, so in the source .cpp file  
     static AudioManager *_instance;
     RtAudioDriver *_audiod;
 
 public:
-    AudioManager();
+    // Note: only destructor is in the Public section, cause its a Singleton klass
     ~AudioManager();
     static AudioManager* get_instance();
     BaseAudioDriver*  create_driver(std::string& s_aud_name);
