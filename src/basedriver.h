@@ -23,13 +23,21 @@ private:
     void* _user_data = NULL;
     unsigned int _input_channels =0; // number of channels for input
     unsigned int _output_channels =2; // number of channels for input
+    float *_out_left = NULL;
+    float *_out_right = NULL;
     
 public:
     const std::string& _s_driver_name;
     
     BaseAudioDriver(const std::string& s_driver_name) : _s_driver_name(s_driver_name) { }
+    // Note: Destructor must be virtual to be deleting by derived object
     virtual ~BaseAudioDriver() { }
     const std::string& get_driver_name() { return _s_driver_name; }
+    virtual unsigned int get_channels() { return _channels; }
+    virtual unsigned int get_sample_rate() { return _rate; }
+    virtual unsigned int get_buffer_frames() { return _buffer_frames; }
+    virtual float* get_out_left() { return _out_left; }
+    virtual float* get_out_right() { return _out_right; }
     
     virtual void check_devices() {}
     virtual void print_devices() {}
