@@ -2,7 +2,7 @@
 #define AUDIO_MANAGER_H
 #include "rtaudiodriver.h"
 
-class AudioManager : public RtAudioDriver {
+class AudioManager {
 private:
     // Note: the constructor is in the private section, cause it's a Singleton klass
     AudioManager();
@@ -14,13 +14,13 @@ public:
     // Note: only destructor is in the Public section, cause its a Singleton klass
     ~AudioManager();
     static AudioManager* get_instance();
-    BaseAudioDriver*  create_driver(std::string& s_aud_name);
+    BaseAudioDriver*  create_driver(const std::string& s_aud_name);
 
     // Audio Callback calling from RtAudioDriver by stream_callback_func function.
     void next_audio_block(void* input_buffer, void* output_buffer,
           unsigned int buffer_frames, double stream_time,
           unsigned int status, void* user_data) 
-          override {
+          {
       // Note: to avoid inused parameter warning
       (void)input_buffer;
       (void)output_buffer;
@@ -33,7 +33,7 @@ public:
       std::cout << "Je suis ici\n";
     }
 
-    /*
+    // /*
     void check_devices() { _audiod->check_devices(); }
     void print_devices() { _audiod->print_devices(); }
     
@@ -54,7 +54,7 @@ public:
     void set_audio_channels(unsigned int input_channels, unsigned int output_channels) { 
         _audiod->set_audio_channels(input_channels, output_channels); 
     }
-    */
+    // */
 
 
 };

@@ -4,6 +4,16 @@
 /// Note: Initialized static reference of (singleton) klass.
 AudioManager* AudioManager::_instance = NULL;
 AudioManager* _audiom_instance = NULL;
+
+
+int _process_callback(uint32_t, void*) {
+    std::cout << "Process Callback func\n";
+    std::cout << "\a\n";
+
+    return 0;
+}
+//----------------------------------------------------------
+
 // /*
 AudioManager::AudioManager() {
     // _audiod = new RtAudioDriver();
@@ -11,6 +21,8 @@ AudioManager::AudioManager() {
         std::cerr << "Audio Manager is allready running.\n";
     }
 
+    const std::string s_aud_name = "RtAudio";
+    create_driver(s_aud_name);
     _audiom_instance = this;
     _instance = this;
 
@@ -35,10 +47,11 @@ AudioManager*  AudioManager::get_instance() {
 }
 //----------------------------------------------------------
 
-BaseAudioDriver*  AudioManager::create_driver(std::string& s_aud_name) {
+BaseAudioDriver*  AudioManager::create_driver(const std::string& s_aud_name) {
     BaseAudioDriver *p_driver = NULL;   
     if (s_aud_name == "RtAudio") {
-        p_driver = new RtAudioDriver();
+        p_driver = new RtAudioDriver(_process_callback);
+        _audiod = (RtAudioDriver *)p_driver;
         if (p_driver->get_driver_name()  == "NullAudioDriver") {
             delete p_driver;  
             p_driver = NULL;

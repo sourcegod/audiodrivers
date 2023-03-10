@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+
 /*
  * Note: Deprecated type, just for memo
 typedef int (*TStreamCallback )( 
@@ -12,7 +13,6 @@ typedef int (*TStreamCallback )(
         );
 */
 
- 
 class BaseAudioDriver {
 private:
     unsigned int _channels =2;
@@ -23,12 +23,12 @@ private:
     void* _user_data = NULL;
     unsigned int _input_channels =0; // number of channels for input
     unsigned int _output_channels =2; // number of channels for input
-    float *_out_left = NULL;
-    float *_out_right = NULL;
-    
+   
 public:
     const std::string& _s_driver_name;
-    
+    float *_out_left = NULL;
+    float *_out_right = NULL;
+     
     BaseAudioDriver(const std::string& s_driver_name) : _s_driver_name(s_driver_name) { }
     // Note: Destructor must be virtual to be deleting by derived object
     virtual ~BaseAudioDriver() { }
@@ -62,6 +62,6 @@ public:
     }
 
 };
-//----------------------------------------------------------
+//---------------------------------------------------------
 
 #endif

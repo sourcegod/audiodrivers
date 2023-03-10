@@ -9,6 +9,7 @@
 #ifdef RTAUDIO_SUPPORT
     #include "RtAudio.h"
 
+typedef int (*TAudioProcessCallback )(uint32_t, void*); 
 /*
  * Note: Deprecated type, just for memo
 typedef int (*TStreamCallback )( 
@@ -20,6 +21,48 @@ typedef int (*TStreamCallback )(
 
  
 class RtAudioDriver : public BaseAudioDriver {
+public:
+    TAudioProcessCallback _process_callback;
+    float *_out_left = NULL;
+    float *_out_right = NULL;
+ 
+    RtAudioDriver(TAudioProcessCallback process_callback) 
+      : BaseAudioDriver("RtAudioDriver"), 
+      _process_callback(process_callback) {
+        // Note: the error callback function must static  
+        // Default RtAudio constructor
+        _dac = new RtAudio( RtAudio::UNSPECIFIED, &errorCallback );
+        // _dac.setErrorCallback( &errorCallback ); // could use if not set via constructor
+
+        // Tell RtAudio to output all messages, even warnings.
+        _dac->showWarnings( true );
+
+    }
+    
+    ~RtAudioDriver() { delete _dac; }
+    
+    static void errorCallback( RtAudioErrorType /*type*/, const std::string &errorText );
+    virtual void check_devices() override;
+    virtual void print_devices() override;
+    virtual unsigned int getDeviceIndex( std::vector<std::string> deviceNames ) override;
+    virtual int init_params(unsigned int channels, unsigned int rate, 
+            unsigned int bufferFrames, 
+            unsigned int outputDevice) override;
+    virtual int open() override;
+    virtual void close() override;
+    virtual void start_driver() override;
+    virtual void stop_driver() override;
+    virtual bool is_running() override { return _dac->isStreamRunning(); }
+    void set_stream_callback(RtAudioCallback stream_callback) { _stream_callback = stream_callback; } 
+    virtual void next_audio_block(void* /*input_buffer*/, void* /*output_buffer*/,
+          unsigned int /*buffer_frames*/, double /*stream_time*/,
+          unsigned int /*status*/, void* /*user_data*/) 
+          override {}
+    
+    virtual void set_user_data(void* user_data) 
+        override { _user_data = user_data; }
+    virtual void set_audio_channels(unsigned int output_channels, unsigned int input_channels) override; 
+
 private:
     RtAudio* _dac =0;
     unsigned int _channels =2;
@@ -36,22 +79,42 @@ private:
     void* _user_data = NULL;
     unsigned int _output_channels =2; // number of channels for input
     unsigned int _input_channels =0; // number of channels for input
+
     
     static int stream_callback_func( 
         void *outputBuffer, void *inputBuffer, 
         unsigned int nBufferFrames, double streamTime, 
         RtAudioStreamStatus status, void *userData ) {
     
+        (void)outputBuffer;
+
+        (void)inputBuffer;
+        (void)streamTime;
+        (void)status;
+
         /*
-        double *lastValues = (double *) userData;
+            double *lastValues = (double *) userData;
         */
 
-        RtAudioDriver *p_obj = (RtAudioDriver *) userData;
+        RtAudioDriver *p_driver = (RtAudioDriver *) userData;
+        float *out = (float *)outputBuffer;
+        // float *in = (float *)inputBuffer;
+
+
+        
+        /*
         p_obj->next_audio_block(inputBuffer, outputBuffer, 
                 nBufferFrames, streamTime,
                 status, userData);
+        */
+        
+        p_driver->_process_callback(nBufferFrames, NULL);
+	      for (unsigned i =0; i < nBufferFrames; i++ ) {
+		        *out++ = p_driver->_out_left[ i ];
+		        *out++ = p_driver->_out_right[ i ];
+	      }
 
-      std::cout << "\a\n";
+        // std::cout << "\a\n";
         if ( status ) {
             std::cout << "Stream over/underflow detected." << std::endl;
         }
@@ -67,43 +130,6 @@ private:
         return 0;
     }
     //----------------------------------------------------------
-
-public:
-    RtAudioDriver() : BaseAudioDriver("RtAudioDriver") {
-        // Note: the error callback function must static  
-        // Default RtAudio constructor
-        _dac = new RtAudio( RtAudio::UNSPECIFIED, &errorCallback );
-        // _dac.setErrorCallback( &errorCallback ); // could use if not set via constructor
-
-        // Tell RtAudio to output all messages, even warnings.
-        _dac->showWarnings( true );
-
-    }
-    // */
-    
-    ~RtAudioDriver() { delete _dac; }
-    
-    static void errorCallback( RtAudioErrorType /*type*/, const std::string &errorText );
-    void check_devices() override;
-    void print_devices() override;
-    unsigned int getDeviceIndex( std::vector<std::string> deviceNames ) override;
-    int init_params(unsigned int channels, unsigned int rate, 
-            unsigned int bufferFrames, 
-            unsigned int outputDevice) override;
-    int open() override;
-    void close() override;
-    void start_driver() override;
-    void stop_driver() override;
-    bool is_running() override { return _dac->isStreamRunning(); }
-    void set_stream_callback(RtAudioCallback stream_callback) { _stream_callback = stream_callback; } 
-    void next_audio_block(void* /*input_buffer*/, void* /*output_buffer*/,
-          unsigned int /*buffer_frames*/, double /*stream_time*/,
-          unsigned int /*status*/, void* /*user_data*/) 
-          override {}
-    
-    void set_user_data(void* user_data) 
-        override { _user_data = user_data; }
-    void set_audio_channels(unsigned int output_channels, unsigned int input_channels) override; 
 
 };
 
