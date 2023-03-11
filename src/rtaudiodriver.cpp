@@ -99,6 +99,9 @@ int RtAudioDriver::init_params(unsigned int channels, unsigned int rate, unsigne
 //----------------------------------------------------------
 
 int RtAudioDriver::open() {
+    // initialize input and output channels for sharing data in callback function
+    _outbuf_left = new float[_bufferFrames];
+    _outbuf_right = new float[_bufferFrames];
     RtAudio::StreamParameters *output_params, *input_params = NULL;
     // _in_params.nChannels =0;
     if (_output_channels >0) output_params = &_out_params;
@@ -136,6 +139,8 @@ int RtAudioDriver::open() {
 void RtAudioDriver::close() {
     if (_dac->isStreamOpen() ) _dac->closeStream();
     free( _userData );
+    if ( _outbuf_left ) delete[] _outbuf_left;
+    if ( _outbuf_right ) delete[] _outbuf_right;
     std::cout << "Closing the Audio Driver...\n";
 
 }

@@ -26,8 +26,8 @@ private:
    
 public:
     const std::string& _s_driver_name;
-    float *_out_left = NULL;
-    float *_out_right = NULL;
+    float *_outbuf_left = NULL;
+    float *_outbuf_right = NULL;
      
     BaseAudioDriver(const std::string& s_driver_name) : _s_driver_name(s_driver_name) { }
     // Note: Destructor must be virtual to be deleting by derived object
@@ -36,8 +36,8 @@ public:
     virtual unsigned int get_channels() { return _channels; }
     virtual unsigned int get_sample_rate() { return _rate; }
     virtual unsigned int get_buffer_frames() { return _buffer_frames; }
-    virtual float* get_out_left() { return _out_left; }
-    virtual float* get_out_right() { return _out_right; }
+    virtual float* get_outbuf_left() { return _outbuf_left; }
+    virtual float* get_outbuf_right() { return _outbuf_right; }
     
     virtual void check_devices() {}
     virtual void print_devices() {}

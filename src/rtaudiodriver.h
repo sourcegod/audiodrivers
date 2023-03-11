@@ -23,8 +23,8 @@ typedef int (*TStreamCallback )(
 class RtAudioDriver : public BaseAudioDriver {
 public:
     TAudioProcessCallback _process_callback;
-    float *_out_left = NULL;
-    float *_out_right = NULL;
+    float *_outbuf_left = NULL;
+    float *_outbuf_right = NULL;
  
     RtAudioDriver(TAudioProcessCallback process_callback) 
       : BaseAudioDriver("RtAudioDriver"), 
@@ -114,12 +114,12 @@ private:
         
         p_driver->_process_callback(nBufferFrames, NULL);
 	      
-        /*
+        // /*
         for (unsigned i =0; i < nBufferFrames; i++ ) {
-		        *out++ = p_driver->_out_left[ i ];
-		        *out++ = p_driver->_out_right[ i ];
+		        *out++ = p_driver->_outbuf_left[ i ];
+		        *out++ = p_driver->_outbuf_right[ i ];
 	      }
-        */
+        // */
 
 
        
