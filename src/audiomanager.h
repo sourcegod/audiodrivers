@@ -14,7 +14,7 @@ public:
     // Note: only destructor is in the Public section, cause its a Singleton klass
     ~AudioManager();
     static AudioManager* get_instance();
-    BaseAudioDriver*  create_driver(const std::string& s_aud_name);
+    void init_drivers(const std::string& s_aud_name);
 
     // Audio Callback calling from RtAudioDriver by stream_callback_func function.
     void next_audio_block(void* input_buffer, void* output_buffer,
@@ -32,6 +32,7 @@ public:
       std::cout << "\a\n";
       std::cout << "Je suis ici\n";
     }
+
 
     // /*
     void check_devices() { _audiod->check_devices(); }

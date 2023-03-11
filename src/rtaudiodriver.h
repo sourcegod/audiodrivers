@@ -64,7 +64,7 @@ public:
     virtual void set_audio_channels(unsigned int output_channels, unsigned int input_channels) override; 
 
 private:
-    RtAudio* _dac =0;
+    RtAudio* _dac = NULL;
     unsigned int _channels =2;
     unsigned int _rate =44100;
     unsigned int _bufferFrames =256;
@@ -92,6 +92,10 @@ private:
         (void)streamTime;
         (void)status;
 
+        if ( status ) {
+            std::cout << "Stream over/underflow detected." << std::endl;
+        }
+ 
         /*
             double *lastValues = (double *) userData;
         */
@@ -109,16 +113,16 @@ private:
         */
         
         p_driver->_process_callback(nBufferFrames, NULL);
-	      for (unsigned i =0; i < nBufferFrames; i++ ) {
+	      
+        /*
+        for (unsigned i =0; i < nBufferFrames; i++ ) {
 		        *out++ = p_driver->_out_left[ i ];
 		        *out++ = p_driver->_out_right[ i ];
 	      }
+        */
 
-        // std::cout << "\a\n";
-        if ( status ) {
-            std::cout << "Stream over/underflow detected." << std::endl;
-        }
-        
+
+       
         
         /*
         frameCounter += nBufferFrames;
