@@ -28,7 +28,7 @@ $(shell mkdir -vp $(BUILD_DIR))
 # $(info target:  $(TARGET))
 
 # Compile C++ source
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	$(info Compiling C++ sources:  $@, $<)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

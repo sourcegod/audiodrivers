@@ -8,8 +8,8 @@ uint32_t _buffer_size = 256;
 /// Note: Initialized static reference of (singleton) klass.
 AudioManager* AudioManager::_instance = NULL;
 AudioManager* _audiom_instance = NULL;
-float *_mainbuf_left = NULL;
-float *_mainbuf_right = NULL;
+float *_outbuf_left = NULL;
+float *_outbuf_right = NULL;
 
 
 int _process_callback(uint32_t frame_count, void* user_data) {
@@ -23,13 +23,13 @@ int _process_callback(uint32_t frame_count, void* user_data) {
 //----------------------------------------------------------
 
 void init_buffers(uint32_t buf_size) {
-    if ( _mainbuf_left ) {
-        std::cout << "[Init buffers], mainbuf_left\n";
-        memset(_mainbuf_left, 0, buf_size * sizeof(float));
+    if ( _outbuf_left ) {
+        std::cout << "[Init buffers], outbuf_left\n";
+        memset(_outbuf_left, 0, buf_size * sizeof(float));
     }
-    if ( _mainbuf_right ) {
-        std::cout << "[Init buffers], mainbuf_right\n";
-        memset(_mainbuf_right, 0, buf_size * sizeof(float));
+    if ( _outbuf_right ) {
+        std::cout << "[Init buffers], outbuf_right\n";
+        memset(_outbuf_right, 0, buf_size * sizeof(float));
     }
 
 
@@ -57,8 +57,8 @@ BaseAudioDriver* create_driver(const std::string& s_aud_name) {
     }
 
     if (p_driver != NULL) {
-      _mainbuf_left = p_driver->get_outbuf_left();
-      _mainbuf_right = p_driver->get_outbuf_right();
+      _outbuf_left = p_driver->get_outbuf_left();
+      _outbuf_right = p_driver->get_outbuf_right();
       // Init buffers
       // init_audio();
     }

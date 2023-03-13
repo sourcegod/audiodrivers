@@ -11,6 +11,7 @@ private:
     RtAudioDriver *_audiod;
 
 public:
+    //
     // Note: only destructor is in the Public section, cause its a Singleton klass
     ~AudioManager();
     static AudioManager* get_instance();
