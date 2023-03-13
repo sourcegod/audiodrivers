@@ -23,8 +23,8 @@ typedef int (*TStreamCallback )(
 class RtAudioDriver : public BaseAudioDriver {
 public:
     TAudioProcessCallback _process_callback;
-    float *_outbuf_left = NULL;
-    float *_outbuf_right = NULL;
+    float *_outbuf_left = nullptr;
+    float *_outbuf_right = nullptr;
  
     RtAudioDriver(TAudioProcessCallback process_callback) 
       : BaseAudioDriver("RtAudioDriver"), 
@@ -64,19 +64,19 @@ public:
     virtual void set_audio_channels(unsigned int output_channels, unsigned int input_channels) override; 
 
 private:
-    RtAudio* _dac = NULL;
+    RtAudio* _dac = nullptr;
     unsigned int _channels =2;
     unsigned int _rate =44100;
     unsigned int _bufferFrames =256;
     unsigned int _outputDevice =0;
     unsigned int _inputDevice =0;
-    double* _userData = NULL;
+    double* _userData = nullptr;
     RtAudio::StreamOptions options;
     RtAudio::StreamParameters _out_params, _in_params;
     // Specify our own error callback function.
     std::vector<unsigned int> _deviceIds; 
     RtAudioCallback _stream_callback =0;
-    void* _user_data = NULL;
+    void* _user_data = nullptr;
     unsigned int _output_channels =2; // number of channels for input
     unsigned int _input_channels =0; // number of channels for input
 
@@ -112,7 +112,7 @@ private:
                 status, userData);
         */
         
-        p_driver->_process_callback(nBufferFrames, NULL);
+        p_driver->_process_callback(nBufferFrames, nullptr);
 	      
         // /*
         for (unsigned i =0; i < nBufferFrames; i++ ) {

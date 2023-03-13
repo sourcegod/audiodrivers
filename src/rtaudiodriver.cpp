@@ -102,7 +102,7 @@ int RtAudioDriver::open() {
     // initialize input and output channels for sharing data in callback function
     _outbuf_left = new float[_bufferFrames];
     _outbuf_right = new float[_bufferFrames];
-    RtAudio::StreamParameters *output_params, *input_params = NULL;
+    RtAudio::StreamParameters *output_params, *input_params = nullptr;
     // _in_params.nChannels =0;
     if (_output_channels >0) output_params = &_out_params;
     if (_input_channels >0) input_params = &_in_params;

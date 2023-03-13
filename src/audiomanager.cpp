@@ -6,10 +6,10 @@
 uint32_t _buffer_size = 256;
 
 /// Note: Initialized static reference of (singleton) klass.
-AudioManager* AudioManager::_instance = NULL;
-AudioManager* _audiom_instance = NULL;
-float *_outbuf_left = NULL;
-float *_outbuf_right = NULL;
+AudioManager* AudioManager::_instance = nullptr;
+AudioManager* _audiom_instance = nullptr;
+float *_outbuf_left = nullptr;
+float *_outbuf_right = nullptr;
 
 
 int _process_callback(uint32_t frame_count, void* user_data) {
@@ -44,19 +44,19 @@ void init_audio() {
 //----------------------------------------------------------
 
 BaseAudioDriver* create_driver(const std::string& s_aud_name) {
-    BaseAudioDriver *p_driver = NULL;   
+    BaseAudioDriver *p_driver = nullptr;   
     if (s_aud_name == "RtAudio") {
         p_driver = new RtAudioDriver(_process_callback);
         if (p_driver->get_driver_name()  == "NullAudioDriver") {
             delete p_driver;  
-            p_driver = NULL;
+            p_driver = nullptr;
         }
     
     } else {
         std::cerr << "[create_driver] Unknown driver" + s_aud_name + "\n";
     }
 
-    if (p_driver != NULL) {
+    if (p_driver != nullptr) {
       _outbuf_left = p_driver->get_outbuf_left();
       _outbuf_right = p_driver->get_outbuf_right();
       // Init buffers
@@ -90,15 +90,15 @@ AudioManager::AudioManager() {
 //----------------------------------------------------------
 
 AudioManager::~AudioManager() {
-    _audiom_instance = NULL;
-    _instance = NULL;
+    _audiom_instance = nullptr;
+    _instance = nullptr;
 
 }
 //----------------------------------------------------------
 
 
 AudioManager*  AudioManager::get_instance() {
-    if (_instance == NULL) {
+    if (_instance == nullptr) {
         _instance = new AudioManager();
     }
     
