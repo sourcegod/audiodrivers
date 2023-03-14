@@ -9,7 +9,7 @@
 #ifdef RTAUDIO_SUPPORT
     #include "RtAudio.h"
 
-typedef int (*TAudioProcessCallback )(uint32_t, void*); 
+typedef int (*TAudioProcessCallback )(void*, void*, uint32_t, void*); 
 /*
  * Note: Deprecated type, just for memo
 typedef int (*TStreamCallback )( 
@@ -112,7 +112,7 @@ private:
                 status, userData);
         */
         
-        p_driver->_process_callback(nBufferFrames, nullptr);
+        p_driver->_process_callback(inputBuffer, outputBuffer, nBufferFrames, nullptr);
 	      
         // /*
         for (unsigned i =0; i < nBufferFrames; i++ ) {
