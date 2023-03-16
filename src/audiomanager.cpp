@@ -11,6 +11,68 @@ AudioManager* _audiom_instance = nullptr;
 float *_outbuf_left = nullptr;
 float *_outbuf_right = nullptr;
 
+// prototypes
+class Synth;
+void init_buffers(uint32_t);
+
+Synth *_synth = nullptr;
+class Synth {
+public:
+    Synth() {}
+    ~Synth() {}
+    void init() { 
+        _user_data = new double[2];
+
+    }
+
+    void process_audio_buffer(float **apf_buf, uint32_t an_count) {
+        double *last_values = (double *) _user_data;
+        for (uint32_t i=0; i < an_count; i++) {
+            for (uint32_t j=0; j < 2; j++) {
+                *apf_buf[i] +=  (float) (last_values[j] * _scale * 0.5);
+                // inc channel0 to base_rate: 0.005, 44100*0.005 = 220.5 HZ
+                // and inc channel1 to the octave + 0.1 step
+                last_values[j] +=  _base_rate * (j+1 + (j*0.5) );
+                if ( last_values[j] >= 1.0 ) last_values[j] -= 2.0;
+            
+            }
+        
+        }
+
+    
+    }
+    //----------------------------------------------------------
+
+    void process_data(float *apf_bufleft, float *apf_bufright, uint32_t an_count) {
+        double *last_values = (double *) _user_data;
+        for (uint32_t i=0; i < an_count; i++) {
+            for (uint32_t j=0; j < 2; j++) {
+                if (j == 0) 
+                    apf_bufleft[i+j] +=  (float) (last_values[j] * _scale * 0.5);
+                else
+                    apf_bufright[i+j] +=  (float) (last_values[j] * _scale * 0.5);
+                // inc channel0 to base_rate: 0.005, 44100*0.005 = 220.5 HZ
+                // and inc channel1 to the octave + 0.1 step
+                last_values[j] +=  _base_rate * (j+1 + (j*0.5) );
+                if ( last_values[j] >= 1.0 ) last_values[j] -= 2.0;
+            
+            }
+        
+        }
+
+    
+    }
+    //----------------------------------------------------------
+
+
+private:
+    const uint32_t _base_rate = 0.005; // rate * base_rate = 220.5, nearly note A220.
+    const uint32_t _scale =1.0;
+    double *_user_data = nullptr;
+
+};
+//----------------------------------------------------------
+
 
 int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size, void* user_data) {
     (void)input_buffer;
@@ -21,7 +83,9 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
     // double *lastValues = (double *) _user_data;
     // float *in = (float *)input_buffer;
     float *out = (float *)output_buffer;
-    float *buf_data = new float[buf_size];
+    // float *buf_data = new float[buf_size];
+    // init_buffers(buf_size);
+    // _synth->process_data(_outbuf_left, _outbuf_right, buf_size);
 
 
     /*
@@ -33,12 +97,12 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
     memcpy( outputBuffer, inputBuffer, _buffer_bytes);
     */
     
-    // /*
+    /*
     for (unsigned i =0; i < buf_size; i++ ) {
         *out++ = buf_data[ i ];
         *out++ = buf_data[ i ];
     }
-    // */
+    */
 
  
     /*
@@ -76,45 +140,12 @@ void init_buffers(uint32_t buf_size) {
 //----------------------------------------------------------
 
 void init_audio() {
-      init_buffers(_buffer_size);
+      
+    init_buffers(_buffer_size);
+    _synth = new Synth();
 
 
 }
-//----------------------------------------------------------
-
-class Synth {
-public:
-    Synth() {}
-    ~Synth() {}
-    void init() { 
-        _user_data = new double[2];
-
-    }
-
-    void process_audio_buffer(float **apf_buf, uint32_t an_count) {
-        double *last_values = (double *) _user_data;
-        for (uint32_t i=0; i < an_count; i++) {
-            for (uint32_t j=0; j < 2; j++) {
-                *apf_buf[i] +=  (float) (last_values[j] * _scale * 0.5);
-                // inc channel0 to base_rate: 0.005, 44100*0.005 = 220.5 HZ
-                // and inc channel1 to the octave + 0.1 step
-                last_values[j] +=  _base_rate * (j+1 + (j*0.5) );
-                if ( last_values[j] >= 1.0 ) last_values[j] -= 2.0;
-            
-            }
-        
-        }
-
-    
-    }
-    //----------------------------------------------------------
-
-private:
-    const uint32_t _base_rate = 0.005; // rate * base_rate = 220.5, nearly note A220.
-    const uint32_t _scale =1.0;
-    double *_user_data = nullptr;
-
-};
 //----------------------------------------------------------
 
 BaseAudioDriver* create_driver(const std::string& s_aud_name) {
@@ -133,6 +164,7 @@ BaseAudioDriver* create_driver(const std::string& s_aud_name) {
     if (p_driver != nullptr) {
       _outbuf_left = p_driver->get_outbuf_left();
       _outbuf_right = p_driver->get_outbuf_right();
+      std::cout << "[create_driver]: with " << s_aud_name << " driver.\n";
       // Init buffers
       // init_audio();
     }
@@ -155,8 +187,8 @@ AudioManager::AudioManager() {
         std::cerr << "Audio Manager is allready running.\n";
     }
 
-    const std::string s_aud_name = "RtAudio";
-    init_drivers(s_aud_name);
+    // const std::string s_aud_name = "RtAudio";
+    // init_drivers(s_aud_name);
     _audiom_instance = this;
     _instance = this;
 

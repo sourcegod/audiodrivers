@@ -31,6 +31,8 @@ public:
       _process_callback(process_callback) {
         // Note: the error callback function must static  
         // Default RtAudio constructor
+        _outbuf_left = new float[_bufferFrames];
+        _outbuf_right = new float[_bufferFrames];
         _dac = new RtAudio( RtAudio::UNSPECIFIED, &errorCallback );
         // _dac.setErrorCallback( &errorCallback ); // could use if not set via constructor
 
@@ -40,7 +42,9 @@ public:
     }
     
     ~RtAudioDriver() { delete _dac; }
-    
+    virtual float* get_outbuf_left() override { return _outbuf_left; }
+    virtual float* get_outbuf_right() override { return _outbuf_right; }
+     
     static void errorCallback( RtAudioErrorType /*type*/, const std::string &errorText );
     virtual void check_devices() override;
     virtual void print_devices() override;

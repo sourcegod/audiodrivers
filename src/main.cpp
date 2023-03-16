@@ -147,8 +147,9 @@ int main( int argc, char *argv[] ) {
     AudioManager *audiom = AudioManager::get_instance();
     unsigned int device =0;
     // auto* audiom = new RtAudioDriver();
+    audiom->init_drivers("RtAudio");
     audiom->check_devices();
-    audiom->print_devices();
+    // audiom->print_devices();
 
     if (argc > 1)
         device = (unsigned int) atoi( argv[1] );
