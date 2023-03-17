@@ -45,19 +45,22 @@ public:
 
     void process_data(float *apf_bufleft, float *apf_bufright, uint32_t an_count) {
         double *last_values = (double *) _user_data;
+        float val;
+        if (!apf_bufleft) return;
+        if (!apf_bufright) return;
+        // std::cout << "[process_data]: count: " << an_count << " \n";
         for (uint32_t i=0; i < an_count; i++) {
             for (uint32_t j=0; j < 2; j++) {
-                if (j == 0) 
-                    apf_bufleft[i+j] +=  (float) (last_values[j] * _scale * 0.5);
-                else
-                    apf_bufright[i+j] +=  (float) (last_values[j] * _scale * 0.5);
+                val = (float) (last_values[j] * _scale * 0.5);
+                if (j == 0) apf_bufleft[i] = val;
+                else apf_bufright[i] =  val; 
+                
                 // inc channel0 to base_rate: 0.005, 44100*0.005 = 220.5 HZ
                 // and inc channel1 to the octave + 0.1 step
                 last_values[j] +=  _base_rate * (j+1 + (j*0.5) );
                 if ( last_values[j] >= 1.0 ) last_values[j] -= 2.0;
-            
             }
-        
+            
         }
 
     
@@ -66,9 +69,10 @@ public:
 
 
 private:
-    const uint32_t _base_rate = 0.005; // rate * base_rate = 220.5, nearly note A220.
-    const uint32_t _scale =1.0;
-    double *_user_data = nullptr;
+    const float _base_rate = 0.005; // rate * base_rate = 220.5, nearly note A220.
+    const float _scale =1.0;
+    double *_user_data = nullptr; // _user_data[2] = {0.0, 0.0};
+    float _phase_inc =0.0;
 
 };
 //----------------------------------------------------------
@@ -82,11 +86,11 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
     // float *buffer = (float *) output_buffer;
     // double *lastValues = (double *) _user_data;
     // float *in = (float *)input_buffer;
-    float *out = (float *)output_buffer;
+    // float *out = (float *)output_buffer;
     // float *buf_data = new float[buf_size];
     // init_buffers(buf_size);
-    // _synth->process_data(_outbuf_left, _outbuf_right, buf_size);
 
+    _synth->process_data(_outbuf_left, _outbuf_right, buf_size);
 
     /*
      // Copy buffer for duplex
@@ -97,28 +101,6 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
     memcpy( outputBuffer, inputBuffer, _buffer_bytes);
     */
     
-    /*
-    for (unsigned i =0; i < buf_size; i++ ) {
-        *out++ = buf_data[ i ];
-        *out++ = buf_data[ i ];
-    }
-    */
-
- 
-    /*
-    for ( uint32_t i=0; i < buf_size; i++ ) {
-        for ( uint32_t j=0; j < 2; j++ ) {
-            *buffer++ = (float) (lastValues[j] * SCALE * 0.5);
-            // inc channel0 to base_rate: 0.005, 44100*0.005 = 220.5 HZ
-            // and inc channel1 to the octave + 0.1 step
-            lastValues[j] += BASE_RATE * (j+1 + (j*0.5) );
-            if ( lastValues[j] >= 1.0 ) lastValues[j] -= 2.0;
-        }
-
-    }
-    */
-
-    // std::cout << "Process Callback func, frame_count" << frame_count << "\n";
     // std::cout << "\a\n";
 
     return 0;
@@ -143,6 +125,7 @@ void init_audio() {
       
     init_buffers(_buffer_size);
     _synth = new Synth();
+    _synth->init();
 
 
 }
