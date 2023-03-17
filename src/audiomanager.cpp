@@ -19,7 +19,7 @@ Synth *_synth = nullptr;
 class Synth {
 public:
     Synth() {}
-    ~Synth() {}
+    ~Synth() { if (_user_data) delete[] _user_data; }
     void init() { 
         _user_data = new double[2];
 
@@ -52,8 +52,8 @@ public:
         for (uint32_t i=0; i < an_count; i++) {
             for (uint32_t j=0; j < 2; j++) {
                 val = (float) (last_values[j] * _scale * 0.5);
-                if (j == 0) apf_bufleft[i] = val;
-                else apf_bufright[i] =  val; 
+                if (j == 0) apf_bufleft[i] += val;
+                else apf_bufright[i] +=  val; 
                 
                 // inc channel0 to base_rate: 0.005, 44100*0.005 = 220.5 HZ
                 // and inc channel1 to the octave + 0.1 step
@@ -88,7 +88,7 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
     // float *in = (float *)input_buffer;
     // float *out = (float *)output_buffer;
     // float *buf_data = new float[buf_size];
-    // init_buffers(buf_size);
+    init_buffers(buf_size);
 
     _synth->process_data(_outbuf_left, _outbuf_right, buf_size);
 
@@ -109,11 +109,9 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
 
 void init_buffers(uint32_t buf_size) {
     if ( _outbuf_left ) {
-        std::cout << "[Init buffers], outbuf_left\n";
         memset(_outbuf_left, 0, buf_size * sizeof(float));
     }
     if ( _outbuf_right ) {
-        std::cout << "[Init buffers], outbuf_right\n";
         memset(_outbuf_right, 0, buf_size * sizeof(float));
     }
 
