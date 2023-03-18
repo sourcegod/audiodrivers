@@ -1,5 +1,4 @@
 #include "tiny_synth.h"
-#include <iostream>
 
 TinySynth::TinySynth() {}
 TinySynth::~TinySynth() { if (_user_data) delete[] _user_data; }

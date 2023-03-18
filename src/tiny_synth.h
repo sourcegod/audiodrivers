@@ -1,6 +1,6 @@
 #ifndef TINY_SYNTH_H
 #define TINY_SYNTH_H
-#include <iostream>
+#include <cstdint> // for uint32_t type
 
 
 class TinySynth {
