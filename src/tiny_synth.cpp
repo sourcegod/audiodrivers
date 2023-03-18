@@ -1,15 +1,12 @@
 #include "tiny_synth.h"
 
-TinySynth::TinySynth() {}
-TinySynth::~TinySynth() { if (_user_data) delete[] _user_data; }
-void TinySynth::init() { 
-    _user_data = new double[2];
+void TinySynth::init() {
+      last_values = new float[2];
 
 }
 //----------------------------------------------------------
 
 void TinySynth::process_audio_buffer(float *apf_buf, uint32_t an_count) {
-    double *last_values = (double *) _user_data;
     for (uint32_t i=0; i < an_count; i++) {
         for (uint32_t j=0; j < 2; j++) {
             apf_buf[i] +=  (float) (last_values[j] * _scale * 0.5);
@@ -22,12 +19,11 @@ void TinySynth::process_audio_buffer(float *apf_buf, uint32_t an_count) {
     
     }
 
-
 }
 //----------------------------------------------------------
 
 void TinySynth::process_audio_buffer(float *apf_bufleft, float *apf_bufright, uint32_t an_count) {
-    double *last_values = (double *) _user_data;
+    // double *last_values = (double *) _user_data;
     float val;
     if (!apf_bufleft) return;
     if (!apf_bufright) return;

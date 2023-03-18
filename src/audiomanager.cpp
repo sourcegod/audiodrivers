@@ -63,9 +63,6 @@ void init_buffers(uint32_t buf_size) {
 void init_audio() {
       
     init_buffers(_buffer_size);
-    _synth = new TinySynth();
-    _synth->init();
-
 
 }
 //----------------------------------------------------------
@@ -113,6 +110,9 @@ AudioManager::AudioManager() {
     // init_drivers(s_aud_name);
     _audiom_instance = this;
     _instance = this;
+    _synth = new TinySynth();
+    _synth->init();
+
 
 }
 //----------------------------------------------------------
