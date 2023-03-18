@@ -1,6 +1,8 @@
 #include <cstring> // memset
 #include "audiomanager.h"
 #include "rtaudiodriver.h"
+#include "tiny_synth.h"
+
 //----------------------------------------------------------
 
 uint32_t _buffer_size = 256;
@@ -15,7 +17,7 @@ float *_outbuf_right = nullptr;
 class Synth;
 void init_buffers(uint32_t);
 
-Synth *_synth = nullptr;
+TinySynth *_synth = nullptr;
 class Synth {
 public:
     Synth() {}
@@ -90,7 +92,7 @@ int _process_callback(void* input_buffer, void* output_buffer, uint32_t buf_size
     // float *buf_data = new float[buf_size];
     init_buffers(buf_size);
 
-    _synth->process_data(_outbuf_left, _outbuf_right, buf_size);
+    _synth->process_audio_buffer(_outbuf_left, _outbuf_right, buf_size);
 
     /*
      // Copy buffer for duplex
@@ -122,7 +124,7 @@ void init_buffers(uint32_t buf_size) {
 void init_audio() {
       
     init_buffers(_buffer_size);
-    _synth = new Synth();
+    _synth = new TinySynth();
     _synth->init();
 
 
